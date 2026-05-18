@@ -39,3 +39,4 @@ git commit -m "Initial setup"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/income-bot-pro.git
 git push -u origin main# income_bot-2.0
+# auto_income_bot
