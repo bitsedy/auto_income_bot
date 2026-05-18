@@ -1,0 +1,6 @@
+.env.example
+node_modules/
+temp/
+data/
+logs/
+dist/node_modules/
