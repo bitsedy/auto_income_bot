@@ -4,3 +4,4 @@ temp/
 data/
 logs/
 dist/node_modules/
+node_modules/
