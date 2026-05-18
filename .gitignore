@@ -1,7 +1,10 @@
 .env.example
+.env
 node_modules/
 temp/
 data/
 logs/
 dist/node_modules/
+node_modules/
+node_modules/
 node_modules/
