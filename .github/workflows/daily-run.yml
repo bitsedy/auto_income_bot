@@ -1,0 +1,71 @@
+name: Daily Income Bot Run
+
+on:
+  schedule:
+    # Runs every day at 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    # Allows manual trigger from GitHub UI
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - '.github/workflows/daily-run.yml'
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Income Bot Pro
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          HASHNODE_API_TOKEN: ${{ secrets.HASHNODE_API_TOKEN }}
+          HASHNODE_PUBLICATION_ID: ${{ secrets.HASHNODE_PUBLICATION_ID }}
+          MEDIUM_API_TOKEN: ${{ secrets.MEDIUM_API_TOKEN }}
+          MEDIUM_USER_ID: ${{ secrets.MEDIUM_USER_ID }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          AMAZON_ASSOCIATE_TAG: ${{ secrets.AMAZON_ASSOCIATE_TAG }}
+          AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
+          AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          DUBCO_API_KEY: ${{ secrets.DUBCO_API_KEY }}
+          DUBCO_WORKSPACE_SLUG: ${{ secrets.DUBCO_WORKSPACE_SLUG }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          REPORT_EMAIL_TO: ${{ secrets.REPORT_EMAIL_TO }}
+          REPORT_EMAIL_FROM: ${{ secrets.REPORT_EMAIL_FROM }}
+          KOFI_PAGE_URL: ${{ secrets.KOFI_PAGE_URL }}
+          MAX_DAILY_API_SPEND_USD: '0.50'
+          MAX_ARTICLES_PER_RUN: '3'
+          QUALITY_THRESHOLD: '0.75'
+          TARGET_NICHES: 'tech-gadgets,home-office,software-reviews,developer-tools,productivity'
+        run: npm start
+
+      - name: Commit updated stats & dashboard
+        if: always()
+        run: |
+          git config user.name "Income Bot Pro"
+          git config user.email "bot@incomebot.pro"
+          git add data/ dashboard/ -f
+          git diff --staged --quiet || git commit -m "📊 Daily run: $(date +%Y-%m-%d) [skip ci]"
+          git push
